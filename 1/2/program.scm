@@ -16,3 +16,4 @@
 
 (display (sum (map (lambda (num)
 	      (calc-fuel num)) data)) (current-output-port))
+(newline)
