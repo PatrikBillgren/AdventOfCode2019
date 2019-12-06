@@ -8,5 +8,5 @@
     (+ (car numbers) (sum (cdr numbers)))))
 
 (display (sum (map (lambda (num)
-	      (- (floor (/ num 3)) 2)) data)) (current-output-port))
+	      (- (floor (/ num 3)) 2)) data)))
 (newline)
