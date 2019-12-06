@@ -26,7 +26,7 @@ while noun < 100:
             i += 4
 
         if numbers[0] == 19690720:
-            print(f'noun {noun} verb {verb} result {100 * noun + verb}')
+            print(f'{100 * noun + verb}')
             sys.exit()
         verb += 1
     noun += 1
