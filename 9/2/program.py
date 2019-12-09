@@ -3,54 +3,41 @@ import itertools
 from queue import Queue
 from threading import Thread
 
+def _calc_opcode_args(opcode, numbers, i, relative_base):
+    modes = list()
+    args = list()
+    newOpcode = opcode % 100
+    modes.append(int(int((opcode % 1000)) / 100))
+    modes.append(int(int((opcode % 10000)) / 1000))
+    modes.append(int(int((opcode % 100000)) / 10000))
+    opcode = newOpcode
+
+    j = 1
+    for mode in modes:
+        if mode == 1:
+            args.append(i + j)
+        elif mode == 0:
+            args.append(numbers[i + j])
+        else:
+            args.append(relative_base + numbers[i + j])
+        j += 1
+    return (opcode, args)
+
+
 def run_computer(numbers, in_queue, out_queue, num):
     i = 0
     relative_base = 0
     while i < len(numbers):
-        opcode = numbers[i]
-        mode1 = 0
-        mode2 = 0
-        mode3 = 0
-        if opcode > 100:
-            newOpcode = opcode % 100
-            mode1 = int(int((opcode % 1000)) / 100)
-            mode2 = int(int((opcode % 10000)) / 1000)
-            mode3 = int(int((opcode % 100000)) / 10000)
-            opcode = newOpcode
-
-        if mode1 == 1:
-            def number1():
-                return i + 1
-        elif mode1 == 0:
-            def number1():
-                return numbers[i + 1]
-        else:
-            def number1():
-                return relative_base + numbers[i + 1]
-
-        if mode2 == 1:
-            def number2():
-                return i + 2
-        elif mode2 == 0:
-            def number2():
-                return numbers[i + 2]
-        else:
-            def number2():
-                return relative_base + numbers[i + 2]
-
-        if mode3 == 1:
-            def number3():
-                return i + 3
-        elif mode3 == 0:
-            def number3():
-                return numbers[i + 3]
-        else:
-            def number3():
-                return relative_base + numbers[i + 3]
-
+        opcode, args = _calc_opcode_args(numbers[i], numbers, i, relative_base)
+        def number1():
+            return args[0]
+        def number2():
+            return args[1]
+        def number3():
+            return args[2]
 
         if opcode == 99:
-            i = len(numbers)
+            break
         if opcode == 1 or opcode == 2:
             if (opcode == 1):
                 numbers[number3()] = numbers[number1()] + numbers[number2()]
@@ -91,16 +78,25 @@ def run_computer(numbers, in_queue, out_queue, num):
             i += 2
 
 
-lines = [line.rstrip('\n') for line in open('input')]
-numbers = list(map(int, lines[0].split(",")))
-numbers.extend([0] * 10000)
+def run_computer_file(filename, inputs):
+    file = open(filename)
+    lines = [line.rstrip('\n') for line in file]
+    file.close()
+    numbers = list(map(int, lines[0].split(",")))
+    numbers.extend([0] * 10000)
 
-inQueue = Queue()
-inQueue.put(2)
-outQueue = Queue()
-t = Thread(target = run_computer , args = (numbers.copy(), inQueue, outQueue, 0))
-t.start()
-t.join()
-out = 0
-while not outQueue.empty():
-    print(outQueue.get())
+    inQueue = Queue()
+    for inp in inputs:
+        inQueue.put(inp)
+    outQueue = Queue()
+    t = Thread(target = run_computer , args = (numbers.copy(), inQueue, outQueue, 0))
+    t.start()
+    t.join()
+    out = 0
+    output = list()
+    while not outQueue.empty():
+        output.append(outQueue.get())
+    return output
+
+if __name__ == '__main__':
+    print(run_computer_file('input', [2]))
