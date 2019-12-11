@@ -95,7 +95,7 @@ def run_computer_file(filename):
     point = (0, 0)
     direction = 0 # 0 up, 1 right, 2 down, 3 left
     inQueue.put(0)
-    while True:
+    while t.is_alive():
         out = outQueue.get()
         if out == 1:
             whitesquares.add(point)
@@ -103,7 +103,6 @@ def run_computer_file(filename):
         else:
             blacksquares.add(point)
             whitesquares.discard(point)
-        print(f'length {len(blacksquares.union(whitesquares))}')
         out = outQueue.get()
         if out == 0:
             direction -= 1
@@ -126,7 +125,7 @@ def run_computer_file(filename):
         
 
 
-    return len(blacksquares)
+    return len(blacksquares.union(whitesquares))
 
 if __name__ == '__main__':
     output = run_computer_file('input')
