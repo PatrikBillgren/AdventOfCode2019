@@ -59,12 +59,16 @@ if __name__ == '__main__':
 
     print(points)
     largest = 0
+    largestPoint = None
     for point in points:
         number = numberCollinear(point, points)
         if number > largest:
             largest = number
+            largestPoint = point
 
     print(largest)
+    print(largestPoint)
+    print(points.index(largestPoint))
 
 
 
