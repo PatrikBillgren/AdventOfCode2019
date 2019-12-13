@@ -124,9 +124,24 @@ def run_computer_file(filename):
         else:
             inQueue.put(0)
         
+    minx = 0
+    miny = 0
+    maxx = 0
+    maxy = 0
+    for (x, y) in whitesquares:
+        if x < minx:
+            minx = x
+        if x > maxx:
+            maxx = x
+        if y < miny:
+            miny = y
+        if y > maxy:
+            maxy = y
+    print(f'{minx} {maxx} {miny} {maxy}')
 
-    for i in reversed(range(-100, 30)):
-        for j in range(-50, 70):
+    print(f'{range(maxy + 1, miny - 1)}')
+    for i in reversed(range(miny, maxy + 1)):
+        for j in range(minx, maxx + 1):
             if (j, i) in whitesquares:
                 print('#', end='')
             else:
