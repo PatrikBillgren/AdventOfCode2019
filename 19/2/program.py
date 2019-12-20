@@ -86,19 +86,51 @@ def printbeam():
     file.close()
     numbers = list(map(int, lines[0].split(",")))
     numbers.extend([0] * 10000)
-    count = 0
-    for y in range(50):
-        for x in range(50):
-            out = run_computer_file(numbers, x, y)
-            if out == 0:
-                print('.', end='')
-            else:
-                count += 1
-                print('#', end='')
-        print()
-
-    print(f'part 1 result: {count}')
+    found = False
+    for i in range(500, 1000):
+        for j in range(1500, 1600):
+            if squarefit(numbers, j, i):
+                print(f'Result {j}, {i} result {j * 10000 + i}')
+                found = True
+                break
+        if found:
+            break
                 
+cache = dict()
+def run_computer_file_cached(numbers, x, y):
+    if (x, y) in cache.keys():
+        return cache[(x, y)]
+    res = run_computer_file(numbers, x, y)
+    cache[(x, y)] = res
+    return res
+
+def squarefit(numbers, startx, starty):
+    target = 100
+    failed = False
+    count = 0
+    x = startx
+    y = starty
+    while True:
+        out = run_computer_file_cached(numbers, x, y)
+        if out == 0:
+            failed = count != target
+            break
+        x += 1
+        count += 1
+    if failed:
+        return False
+
+    count = 0
+    x = startx
+    y = starty
+    while True:
+        out = run_computer_file(numbers, x, y)
+        if out == 0:
+            failed = count != target
+            break
+        count += 1
+        y += 1
+    return not failed
 
 def run_computer_file(numbers, x, y):
     inQueue = Queue()
